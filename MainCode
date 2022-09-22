@@ -43,8 +43,8 @@ def play(Muzic):
     mixer.music.play(-1)
     now_playing_prep = mz_load.strip("Muzic")
     now_playing = now_playing_prep.strip(".mp3")
-    return now_playing
     print(f"Now Playing", now_playing)
+    return now_playing
 
 
 First_song = play(muzic_list[1])

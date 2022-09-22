@@ -1,5 +1,6 @@
 import pygame
 from pygame import *
+import random
 
 pygame.init()
 mixer.init()
@@ -21,6 +22,7 @@ arrow_left = pygame.transform.rotate(arrow_leftt,180)
 pause_buttonn = pygame.image.load("Images/Pause_button.png").convert_alpha()
 vol_down = pygame.image.load("Images/Volume_down.png").convert_alpha()
 vol_up = pygame.image.load("Images/Volume_up.png").convert_alpha()
+suffle = pygame.image.load("Images/Shuffle.png").convert_alpha()
 
 #Creating the muzic list
 muzic_list = ["Blank",]
@@ -77,6 +79,7 @@ right_Button = Button(500, 200, arrow_right, 0.1)
 pause_button = Button(350, 200, pause_buttonn, 0.1)
 Volume_down = Button(290, 215, vol_down, 0.05)
 Volume_up = Button(440, 215, vol_up, 0.05)
+Shuffle_Button = Button(364, 268, suffle, 0.05)
 
 #Colors
 Gray = 64, 64, 64
@@ -158,6 +161,11 @@ def main():
                 print("volume increased !")
                 print("Curent music volume is", '{:02.2f}'.format(volume))
 
+        #Shuffle button
+        if Shuffle_Button.draw():
+            Shuffle_song = random.randint(1,Songs_count)
+            play(muzic_list[Shuffle_song])
+
         #Quit
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -168,3 +176,4 @@ def main():
 
 #Calling the main loop
 main()
+

@@ -11,16 +11,16 @@ SCREEN_WIDTH = 800
 #Screen initialization and title and logo
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Muzic Player")
-icon = pygame.image.load("Play.png")
+icon = pygame.image.load("Images/Play.png")
 pygame.display.set_icon(icon)
 
 #Loading Buttons
-arrow_leftt = pygame.image.load("Arrow_left.png").convert_alpha()
-arrow_right = pygame.image.load("Arrow_right.png").convert_alpha()
+arrow_leftt = pygame.image.load("Images/Arrow_left.png").convert_alpha()
+arrow_right = pygame.image.load("Images/Arrow_right.png").convert_alpha()
 arrow_left = pygame.transform.rotate(arrow_leftt,180)
-pause_buttonn = pygame.image.load("Pause_button.png").convert_alpha()
-vol_down = pygame.image.load("Volume_down.png").convert_alpha()
-vol_up = pygame.image.load("Volume_up.png").convert_alpha()
+pause_buttonn = pygame.image.load("Images/Pause_button.png").convert_alpha()
+vol_down = pygame.image.load("Images/Volume_down.png").convert_alpha()
+vol_up = pygame.image.load("Images/Volume_up.png").convert_alpha()
 
 #Creating the muzic list
 muzic_list = ["Blank",]

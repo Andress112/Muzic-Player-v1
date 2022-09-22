@@ -1,0 +1,170 @@
+import pygame
+from pygame import *
+
+pygame.init()
+mixer.init()
+
+#Screen Height and Width
+SCREEN_HEIGHT = 500
+SCREEN_WIDTH = 800
+
+#Screen initialization and title and logo
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Muzic Player")
+icon = pygame.image.load("Play.png")
+pygame.display.set_icon(icon)
+
+#Loading Buttons
+arrow_leftt = pygame.image.load("Arrow_left.png").convert_alpha()
+arrow_right = pygame.image.load("Arrow_right.png").convert_alpha()
+arrow_left = pygame.transform.rotate(arrow_leftt,180)
+pause_buttonn = pygame.image.load("Pause_button.png").convert_alpha()
+vol_down = pygame.image.load("Volume_down.png").convert_alpha()
+vol_up = pygame.image.load("Volume_up.png").convert_alpha()
+
+#Creating the muzic list
+muzic_list = ["Blank",]
+def add_music(path):
+    muzic_list.append(path)
+
+#Adding the muzic
+add_music("Muzic/Nikolas.mp3")
+add_music("Muzic/Mandrele.mp3")
+add_music("Muzic/Lista de pacate.mp3")
+add_music("Muzic/Pilly.mp3")
+add_music("Muzic/Te Sigo.mp3")
+
+
+#Muzic load and play
+def play(Muzic):
+    mixer.music.load(Muzic)
+    mixer.music.play(-1)
+
+play(muzic_list[1])
+
+
+#Creating buttons
+
+class Button():
+    def __init__(self, x, y, image, scale):
+        width = image.get_width()
+        height = image.get_height()
+        self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = x, y
+        self.clicked = False
+
+    def draw(self):
+        action = False
+        #draw buttons on screen
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+        #get maus position
+        pos = pygame.mouse.get_pos()
+        #Chec mouseover and clicked conditions
+        if self.rect.collidepoint(pos):
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked = True
+                action = True
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+            action = False
+        return action
+
+
+#Create button instances
+left_button = Button(200, 202.5, arrow_left, 0.1)
+right_Button = Button(500, 200, arrow_right, 0.1)
+pause_button = Button(350, 200, pause_buttonn, 0.1)
+Volume_down = Button(290, 215, vol_down, 0.05)
+Volume_up = Button(440, 215, vol_up, 0.05)
+
+#Colors
+Gray = 64, 64, 64
+
+#Main loop
+def main():
+    run = True
+    FPS = 60
+    Clock = pygame.time.Clock()
+
+    #Creating some variabels
+    music_playing = False
+    currently_playing = 1
+    Songs_count = len(muzic_list) - 1
+
+
+
+    #seting the initial volume
+    volume = 0.5
+    mixer.music.set_volume(volume)
+    mixer.music.pause()
+
+    while run:
+        Clock.tick(FPS)
+        screen.fill(Gray)
+
+        #draw buttons
+
+        #Left Button
+        if left_button.draw():
+            if currently_playing == 1:
+                print("This is the last Song , Please go to the next one !")
+                continue
+            elif currently_playing > 1:
+                play(muzic_list[currently_playing - 1])
+                currently_playing = currently_playing - 1
+
+        #Right button
+        if right_Button.draw():
+            if Songs_count == currently_playing:
+                print("This is the last Song , Please go back !")
+                continue
+            elif currently_playing < Songs_count and not currently_playing == Songs_count:
+                play(muzic_list[currently_playing + 1])
+                currently_playing = currently_playing + 1
+
+
+        #Pause Button
+        if pause_button.draw():
+            if music_playing == True:
+
+                mixer.music.pause()
+                music_playing = False
+                print("Music Paused ...")
+            elif music_playing == False:
+                mixer.music.unpause()
+                music_playing = True
+                print("Music resumed !")
+
+        #Volume down
+        if Volume_down.draw():
+            if volume <= 0:
+                print("Volume is at the lowest level")
+                continue
+            else:
+                volume = volume - 0.1
+                mixer.music.set_volume(volume)
+                print("volume decreased !")
+                print("Curent music volume is", '{:02.2f}'.format(volume))
+
+        #Volume Up
+        if Volume_up.draw():
+            if volume >= 1:
+                print("Volume is at the max level!")
+                continue
+            else:
+                volume = volume + 0.1
+                mixer.music.set_volume(volume)
+                print("volume increased !")
+                print("Curent music volume is", '{:02.2f}'.format(volume))
+
+        #Quit
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        pygame.display.update()
+
+
+#Calling the main loop
+main()

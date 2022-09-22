@@ -1,13 +1,20 @@
 import pygame
 from pygame import *
 import random
+import os
 
 pygame.init()
+pygame.font.init()
 mixer.init()
 
 #Screen Height and Width
 SCREEN_HEIGHT = 500
 SCREEN_WIDTH = 800
+
+#Text Font
+textfont = pygame.font.SysFont("Arial",16)
+textfont_small = pygame.font.SysFont("Arial",12)
+
 
 #Screen initialization and title and logo
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -24,25 +31,24 @@ vol_down = pygame.image.load("Images/Volume_down.png").convert_alpha()
 vol_up = pygame.image.load("Images/Volume_up.png").convert_alpha()
 suffle = pygame.image.load("Images/Shuffle.png").convert_alpha()
 
-#Creating the muzic list
-muzic_list = ["Blank",]
-def add_music(path):
-    muzic_list.append(path)
-
-#Adding the muzic
-add_music("Muzic/Nikolas.mp3")
-add_music("Muzic/Mandrele.mp3")
-add_music("Muzic/Lista de pacate.mp3")
-add_music("Muzic/Pilly.mp3")
-add_music("Muzic/Te Sigo.mp3")
-
+#Loading muzic from folder
+muzic_prep = os.listdir("Muzic")
+muzic_prep.insert(0, "Blank")
+muzic_list = muzic_prep
 
 #Muzic load and play
 def play(Muzic):
-    mixer.music.load(Muzic)
+    mz_load = ("Muzic/" + Muzic)
+    mixer.music.load(mz_load)
     mixer.music.play(-1)
+    now_playing_prep = mz_load.strip("Muzic")
+    now_playing = now_playing_prep.strip(".mp3")
+    return now_playing
+    print(f"Now Playing", now_playing)
 
-play(muzic_list[1])
+
+First_song = play(muzic_list[1])
+print(First_song)
 
 
 #Creating buttons
@@ -74,18 +80,19 @@ class Button():
 
 
 #Create button instances
-left_button = Button(200, 202.5, arrow_left, 0.1)
-right_Button = Button(500, 200, arrow_right, 0.1)
-pause_button = Button(350, 200, pause_buttonn, 0.1)
-Volume_down = Button(290, 215, vol_down, 0.05)
-Volume_up = Button(440, 215, vol_up, 0.05)
-Shuffle_Button = Button(364, 268, suffle, 0.05)
+left_button = Button(225, 202.5, arrow_left, 0.1)
+right_Button = Button(520, 200, arrow_right, 0.1)
+pause_button = Button(374, 200, pause_buttonn, 0.1)
+Volume_down = Button(310, 215, vol_down, 0.05)
+Volume_up = Button(470, 215, vol_up, 0.05)
+Shuffle_Button = Button(387, 268, suffle, 0.05)
 
 #Colors
 Gray = 64, 64, 64
+white = 255, 255, 255
 
 #Main loop
-def main():
+def main(First_song):
     run = True
     FPS = 60
     Clock = pygame.time.Clock()
@@ -94,6 +101,7 @@ def main():
     music_playing = False
     currently_playing = 1
     Songs_count = len(muzic_list) - 1
+    now_playing = First_song
 
 
 
@@ -114,7 +122,7 @@ def main():
                 print("This is the last Song , Please go to the next one !")
                 continue
             elif currently_playing > 1:
-                play(muzic_list[currently_playing - 1])
+                now_playing = play(muzic_list[currently_playing - 1])
                 currently_playing = currently_playing - 1
 
         #Right button
@@ -123,7 +131,7 @@ def main():
                 print("This is the last Song , Please go back !")
                 continue
             elif currently_playing < Songs_count and not currently_playing == Songs_count:
-                play(muzic_list[currently_playing + 1])
+                now_playing = play(muzic_list[currently_playing + 1])
                 currently_playing = currently_playing + 1
 
 
@@ -164,7 +172,33 @@ def main():
         #Shuffle button
         if Shuffle_Button.draw():
             Shuffle_song = random.randint(1,Songs_count)
-            play(muzic_list[Shuffle_song])
+            now_playing = play(muzic_list[Shuffle_song])
+            print("Random Song Played!")
+
+        #Volume show
+        if volume >=1:
+            volume_render = f"Current Volume : Max"
+        elif volume <= 0:
+            volume_render = f"Current Volume : Min"
+        else:
+            volume_render = f"Current Volume : {'{:02.1f}'.format(volume)}"
+        Volume_show = textfont.render(volume_render, 1, white)
+        screen.blit(Volume_show, (640, 475))
+
+        #Show curentli playing
+        now_playing_prep = now_playing.strip("/")
+        Show_curentli_playing_prep = f"Now Playing : {now_playing_prep}"
+        Show_curentli_playing = textfont.render(Show_curentli_playing_prep, 1, white)
+        screen.blit(Show_curentli_playing, (10, 475))
+
+        #show playing or paused
+        if music_playing == True:
+            Paused_or_playing_prep = "Playing"
+        elif music_playing == False:
+            Paused_or_playing_prep = "Paused"
+        Paused_or_playing = textfont_small.render(Paused_or_playing_prep, 1, white)
+        screen.blit(Paused_or_playing, (5,5))
+
 
         #Quit
         for event in pygame.event.get():
@@ -175,5 +209,4 @@ def main():
 
 
 #Calling the main loop
-main()
-
+main(First_song)

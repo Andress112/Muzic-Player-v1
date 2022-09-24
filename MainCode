@@ -1,5 +1,5 @@
 import pygame
-from pygame import *
+from pygame import mixer
 import random
 import os
 
@@ -102,8 +102,11 @@ def main(First_song):
     currently_playing = 1
     Songs_count = len(muzic_list) - 1
     now_playing = First_song
-
-
+    Pause = False
+    Left_button = False
+    Right_button = False
+    Vol_up = False
+    Vol_Down = False
 
     #seting the initial volume
     volume = 0.5
@@ -114,10 +117,28 @@ def main(First_song):
         Clock.tick(FPS)
         screen.fill(Gray)
 
+        #Event Cheker
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    Pause = True
+                elif event.key == pygame.K_LEFT:
+                    Left_button = True
+                elif event.key == pygame.K_RIGHT:
+                    Right_button = True
+                elif event.key == pygame.K_UP:
+                    Vol_up = True
+                elif event.key == pygame.K_DOWN:
+                    Vol_Down = True
+                elif event.key == pygame.K_ESCAPE:
+                    run = False
+            if event.type == pygame.QUIT:
+                run = False
+
         #draw buttons
 
         #Left Button
-        if left_button.draw():
+        if left_button.draw() or Left_button:
             if currently_playing == 1:
                 print("This is the last Song , Please go to the next one !")
                 continue
@@ -126,7 +147,7 @@ def main(First_song):
                 currently_playing = currently_playing - 1
 
         #Right button
-        if right_Button.draw():
+        if right_Button.draw() or Right_button:
             if Songs_count == currently_playing:
                 print("This is the last Song , Please go back !")
                 continue
@@ -136,7 +157,7 @@ def main(First_song):
 
 
         #Pause Button
-        if pause_button.draw():
+        if pause_button.draw() or Pause:
             if music_playing == True:
 
                 mixer.music.pause()
@@ -148,7 +169,7 @@ def main(First_song):
                 print("Music resumed !")
 
         #Volume down
-        if Volume_down.draw():
+        if Volume_down.draw() or Vol_Down:
             if volume <= 0:
                 print("Volume is at the lowest level")
                 continue
@@ -159,7 +180,7 @@ def main(First_song):
                 print("Curent music volume is", '{:02.2f}'.format(volume))
 
         #Volume Up
-        if Volume_up.draw():
+        if Volume_up.draw() or Vol_up:
             if volume >= 1:
                 print("Volume is at the max level!")
                 continue
@@ -199,14 +220,16 @@ def main(First_song):
         Paused_or_playing = textfont_small.render(Paused_or_playing_prep, 1, white)
         screen.blit(Paused_or_playing, (5,5))
 
-
-        #Quit
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
+        #Reseting some variables
+        Pause = False
+        Left_button = False
+        Right_button = False
+        Vol_up = False
+        Vol_Down = False
 
         pygame.display.update()
 
 
 #Calling the main loop
 main(First_song)
+pygame.quit()
